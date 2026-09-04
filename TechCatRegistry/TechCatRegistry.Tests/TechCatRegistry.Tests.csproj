@@ -15,6 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TechCatRegistry.Api\TechCatRegistry.Api.csproj" />
+    <ProjectReference Include="..\TechCatRegistry.Core\TechCatRegistry.Core.csproj" />
+    <ProjectReference Include="..\TechCatRegistry.Data\TechCatRegistry.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 

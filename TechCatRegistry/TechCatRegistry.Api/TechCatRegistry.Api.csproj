@@ -13,4 +13,9 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.24.1-preview.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TechCatRegistry.Core\TechCatRegistry.Core.csproj" />
+    <ProjectReference Include="..\TechCatRegistry.Data\TechCatRegistry.Data.csproj" />
+  </ItemGroup>
+
 </Project>

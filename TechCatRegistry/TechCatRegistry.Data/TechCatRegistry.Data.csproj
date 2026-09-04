@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TechCatRegistry.Core\TechCatRegistry.Core.csproj" />
+  </ItemGroup>
+
 </Project>
