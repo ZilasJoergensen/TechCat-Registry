@@ -3,9 +3,15 @@
     public class UnitTest1
     {
         [Fact]
-        public void Test1()
+        public void TrueTestSuccess()
         {
+            Assert.True(true);
+        }
 
+        [Fact]
+        public void TrueTestFail()
+        {
+            Assert.True(false);
         }
     }
 }
