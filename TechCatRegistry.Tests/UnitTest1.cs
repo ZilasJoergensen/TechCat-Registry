@@ -7,11 +7,5 @@
         {
             Assert.True(true);
         }
-
-        [Fact]
-        public void TrueTestFail()
-        {
-            Assert.True(false);
-        }
     }
 }
