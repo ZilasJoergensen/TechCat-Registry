@@ -1,3 +1,6 @@
 <Solution>
   <Project Path="TechCatRegistry.Api/TechCatRegistry.Api.csproj" />
+  <Project Path="TechCatRegistry.Core/TechCatRegistry.Core.csproj" />
+  <Project Path="TechCatRegistry.Data/TechCatRegistry.Data.csproj" />
+  <Project Path="TechCatRegistry.Tests/TechCatRegistry.Tests.csproj" />
 </Solution>
