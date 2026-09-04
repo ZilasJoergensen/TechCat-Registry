@@ -219,3 +219,8 @@ __marimo__/
 
 # Teknologisk kataloger excel sheets
 .xlsx
+
+.vs/
+bin/
+obj/
+*.user
