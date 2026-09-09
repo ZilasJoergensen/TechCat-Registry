@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TechCatRegistry.Data;
 
@@ -11,9 +12,11 @@ using TechCatRegistry.Data;
 namespace TechCatRegistry.Data.Migrations
 {
     [DbContext(typeof(TechCatDbContext))]
-    partial class TechCatDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260909153932_InitialSchema")]
+    partial class InitialSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
