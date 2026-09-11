@@ -6,7 +6,7 @@ namespace TechCatRegistry.Core;
 
 public class Component
 {
-    public int Id  { get; set; }
+    public int ComponentId  { get; set; }
     public int CatalogId { get; set; }
     public string SheetCode { get; set; }
     public string Name { get; set; }

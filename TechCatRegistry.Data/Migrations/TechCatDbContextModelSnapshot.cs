@@ -24,11 +24,11 @@ namespace TechCatRegistry.Data.Migrations
 
             modelBuilder.Entity("TechCatRegistry.Core.Catalog", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CatalogId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CatalogId"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -38,18 +38,18 @@ namespace TechCatRegistry.Data.Migrations
                     b.Property<DateTime?>("PublishedOn")
                         .HasColumnType("date");
 
-                    b.HasKey("Id");
+                    b.HasKey("CatalogId");
 
                     b.ToTable("Catalog");
                 });
 
             modelBuilder.Entity("TechCatRegistry.Core.Component", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ComponentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ComponentId"));
 
                     b.Property<int>("CatalogId")
                         .HasColumnType("int");
@@ -64,7 +64,7 @@ namespace TechCatRegistry.Data.Migrations
                         .HasMaxLength(31)
                         .HasColumnType("nvarchar(31)");
 
-                    b.HasKey("Id");
+                    b.HasKey("ComponentId");
 
                     b.HasIndex("CatalogId", "SheetCode")
                         .IsUnique();
@@ -74,19 +74,17 @@ namespace TechCatRegistry.Data.Migrations
 
             modelBuilder.Entity("TechCatRegistry.Core.DataPoint", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("DataPointId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DataPointId"));
 
                     b.Property<int>("ComponentId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Estimate")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                    b.Property<int>("EstimateTypeId")
+                        .HasColumnType("int");
 
                     b.Property<decimal?>("NumericValue")
                         .HasPrecision(18, 6)
@@ -105,49 +103,63 @@ namespace TechCatRegistry.Data.Migrations
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("DataPointId");
+
+                    b.HasIndex("EstimateTypeId");
 
                     b.HasIndex("ParameterId");
 
-                    b.HasIndex("ComponentId", "ParameterId", "Year", "Estimate")
+                    b.HasIndex("ComponentId", "ParameterId", "EstimateTypeId", "Year")
                         .IsUnique();
 
                     b.ToTable("DataPoint", t =>
                         {
-                            t.HasCheckConstraint("CK_DataPoint_Estimate", "[Estimate] IN ('ctrl', 'lower', 'upper')");
-
-                            t.HasCheckConstraint("CK_DataPoint_ExactlyOneValue", "([NumericValue] IS NULL) <> ([TxtValue] IS NULL)");
+                            t.HasCheckConstraint("CK_DataPoint_ExactlyOneValue", "([NumericValue] IS NULL AND [TxtValue] IS NOT NULL) OR ([TxtValue] IS NULL AND [NumericValue] IS NOT NULL)");
                         });
                 });
 
-            modelBuilder.Entity("TechCatRegistry.Core.ParamGroup", b =>
+            modelBuilder.Entity("TechCatRegistry.Core.EstimateType", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EstimateTypeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EstimateTypeId"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("EstimateCode")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("int");
+                    b.HasKey("EstimateTypeId");
 
-                    b.HasKey("Id");
+                    b.ToTable("EstimateType");
 
-                    b.ToTable("ParameterGroup");
+                    b.HasData(
+                        new
+                        {
+                            EstimateTypeId = 1,
+                            EstimateCode = "ctrl"
+                        },
+                        new
+                        {
+                            EstimateTypeId = 2,
+                            EstimateCode = "lower"
+                        },
+                        new
+                        {
+                            EstimateTypeId = 3,
+                            EstimateCode = "upper"
+                        });
                 });
 
             modelBuilder.Entity("TechCatRegistry.Core.Parameter", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ParameterId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ParameterId"));
 
                     b.Property<int>("GroupId")
                         .HasColumnType("int");
@@ -163,14 +175,33 @@ namespace TechCatRegistry.Data.Migrations
                     b.Property<string>("Unit")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("ParameterId");
 
-                    b.HasIndex("GroupId");
-
-                    b.HasIndex("Name")
+                    b.HasIndex("GroupId", "Name")
                         .IsUnique();
 
                     b.ToTable("Parameter");
+                });
+
+            modelBuilder.Entity("TechCatRegistry.Core.ParameterGroup", b =>
+                {
+                    b.Property<int>("ParameterGroupId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ParameterGroupId"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("ParameterGroupId");
+
+                    b.ToTable("ParameterGroup");
                 });
 
             modelBuilder.Entity("TechCatRegistry.Core.Component", b =>
@@ -192,6 +223,12 @@ namespace TechCatRegistry.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("TechCatRegistry.Core.EstimateType", "EstimateType")
+                        .WithMany()
+                        .HasForeignKey("EstimateTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TechCatRegistry.Core.Parameter", "Parameter")
                         .WithMany("Points")
                         .HasForeignKey("ParameterId")
@@ -200,12 +237,14 @@ namespace TechCatRegistry.Data.Migrations
 
                     b.Navigation("Component");
 
+                    b.Navigation("EstimateType");
+
                     b.Navigation("Parameter");
                 });
 
             modelBuilder.Entity("TechCatRegistry.Core.Parameter", b =>
                 {
-                    b.HasOne("TechCatRegistry.Core.ParamGroup", "Group")
+                    b.HasOne("TechCatRegistry.Core.ParameterGroup", "Group")
                         .WithMany("Parameters")
                         .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -224,14 +263,14 @@ namespace TechCatRegistry.Data.Migrations
                     b.Navigation("DataPoints");
                 });
 
-            modelBuilder.Entity("TechCatRegistry.Core.ParamGroup", b =>
-                {
-                    b.Navigation("Parameters");
-                });
-
             modelBuilder.Entity("TechCatRegistry.Core.Parameter", b =>
                 {
                     b.Navigation("Points");
+                });
+
+            modelBuilder.Entity("TechCatRegistry.Core.ParameterGroup", b =>
+                {
+                    b.Navigation("Parameters");
                 });
 #pragma warning restore 612, 618
         }

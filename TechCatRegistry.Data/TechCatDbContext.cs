@@ -6,7 +6,7 @@ namespace TechCatRegistry.Data
 {
     public class TechCatDbContext : DbContext
     {
-        public DbSet<ParamGroup> ParameterGroup { get; set; }
+        public DbSet<ParameterGroup> ParameterGroup { get; set; }
         public DbSet<TechCatRegistry.Core.Parameter> Parameter { get; set; }
         public DbSet<DataPoint> DataPoint { get; set; }
         public DbSet<Catalog> Catalog { get; set; }
@@ -16,31 +16,30 @@ namespace TechCatRegistry.Data
         {
         }
 
-        // https://learn.microsoft.com/en-us/ef/core/
+        // Brugte den her som reference https://learn.microsoft.com/en-us/ef/core/
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<DataPoint>(entity =>
             {
-                entity.HasIndex(d => new { d.ComponentId, d.ParameterId, d.Year, d.Estimate }).IsUnique();
+                entity.HasIndex(d => new { d.ComponentId, d.ParameterId, d.EstimateTypeId, d.Year }).IsUnique();
 
-                entity.Property(d => d.Estimate)
-                    .IsRequired()
-                    .HasMaxLength(10);
+                entity.Property(d => d.EstimateTypeId)
+                    .IsRequired();
 
                 entity.Property(d => d.TxtValue).HasMaxLength(50);
 
                 entity.Property(d => d.NumericValue).HasPrecision(18, 6);
 
+                // Havde problemer med at bruge det her, men her er referencen: https://learn.microsoft.com/en-us/ef/core/modeling/indexes?tabs=data-annotations#check-constraints
                 entity.ToTable(t =>
                 {
-                    // https://learn.microsoft.com/en-us/ef/core/modeling/indexes?tabs=data-annotations#check-constraints
-                    t.HasCheckConstraint("CK_DataPoint_ExactlyOneValue", "([NumericValue] IS NULL) <> ([TxtValue] IS NULL)");
-                    t.HasCheckConstraint("CK_DataPoint_Estimate", "[Estimate] IN ('ctrl', 'lower', 'upper')");
+                    t.HasCheckConstraint("CK_DataPoint_ExactlyOneValue", "([NumericValue] IS NULL AND [TxtValue] IS NOT NULL) OR ([TxtValue] IS NULL AND [NumericValue] IS NOT NULL)");
                 });
             });
 
+            
             modelBuilder.Entity<Component>(entity =>
             {
                 entity.Property(c => c.SheetCode)
@@ -66,7 +65,7 @@ namespace TechCatRegistry.Data
                     .IsRequired()
                     .HasMaxLength(200);
 
-                entity.HasIndex(p => p.Name).IsUnique();
+                entity.HasIndex(p => new { p.GroupId, p.Name }).IsUnique();
             });
 
             modelBuilder.Entity<Catalog>(entity =>
@@ -78,11 +77,24 @@ namespace TechCatRegistry.Data
                 entity.Property(c => c.PublishedOn).HasColumnType("date");
             });
 
-            modelBuilder.Entity<ParamGroup>(entity =>
+            modelBuilder.Entity<ParameterGroup>(entity =>
             {
                 entity.Property(g => g.Name)
                     .IsRequired()
                     .HasMaxLength(200);
+            });
+
+            modelBuilder.Entity<EstimateType>(entity =>
+            {
+                entity.Property(e => e.EstimateCode)
+                    .IsRequired()
+                    .HasMaxLength(10);
+
+                entity.HasData(
+                    new EstimateType { EstimateTypeId = 1, EstimateCode = "ctrl" },
+                    new EstimateType { EstimateTypeId = 2, EstimateCode = "lower" },
+                    new EstimateType { EstimateTypeId = 3, EstimateCode = "upper" }
+                    );
             });
         }
     }
