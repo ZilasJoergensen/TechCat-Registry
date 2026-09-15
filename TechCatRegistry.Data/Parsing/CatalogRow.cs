@@ -22,4 +22,14 @@ public class CatalogRow
     public int? PriceYear { get; set; }
 
     public string Val { get; set; }
+
+    public string CatalogueKey { get; set; }
+    public string TechnologyKey { get; set; }
+    public string CatKey { get; set; }
+    public string ParKey { get; set; }
+
+    public string TechId {  get; set; }
+    public string CatId { get; set; }
+    public string CatIdSource {  get; set; }
+    public string ParId { get; set; }
 }
