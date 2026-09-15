@@ -14,8 +14,8 @@ public class CatalogParserTests
         var workbook = new XLWorkbook(TestDataPath);
         var intro = workbook.Worksheet("Intro");
 
-        var version = intro.Cell("B3").GetString();
+        var version = intro.Cell("D3").GetString();
 
-        Assert.Contains("0019", version);
+        Assert.Contains("'0019", version);
     }
 }
