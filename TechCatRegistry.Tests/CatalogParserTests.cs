@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using TechCatRegistry.Data.Parsing;
 
 namespace TechCatRegistry.Tests;
 
@@ -17,6 +18,35 @@ public class CatalogParserTests
         var version = intro.Cell("D3").GetString();
 
         Assert.Contains("0019", version);
+    }
+
+    [Fact]
+    public void ParserReadsAllRowsCount()
+    {
+        var path = Path.Combine(AppContext.BaseDirectory, "TestData", "technology_data_for_el_and_dh_updated_alldatalong.xlsx");
+
+        var parser = new CatalogParser();
+        var rows = parser.ParseFromExcelFilePath(path);
+
+        Assert.Equal(17508, rows.Count);
+    }
+
+    [Fact]
+    public void NewFirstRowTest()
+    {
+        var path = Path.Combine(AppContext.BaseDirectory, "TestData", "technology_data_for_el_and_dh_updated_alldatalong.xlsx");
+
+        var rows = new CatalogParser().ParseFromExcelFilePath(path);
+        var first = rows[0];
+
+        Assert.Equal("ELH", first.CatalogueKey);
+        Assert.Equal("01 Coal CHP", first.Ws);
+        Assert.Equal("Energy/technical data", first.Cat);
+        Assert.Equal("ctrl", first.Est);
+        Assert.Equal(2015, first.Year);
+        Assert.Null(first.Unit);
+        Assert.Null(first.PriceYear);
+        Assert.Equal("A", first.Note);
     }
 
     [Fact]
