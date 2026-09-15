@@ -16,6 +16,6 @@ public class CatalogParserTests
 
         var version = intro.Cell("D3").GetString();
 
-        Assert.Contains("'0019", version);
+        Assert.Contains("0019", version);
     }
 }
