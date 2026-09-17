@@ -55,9 +55,7 @@ public class CatalogParserTests
     [Fact]
     public void IngestMakesCorrectAmount()
     {
-        var options = new DbContextOptionsBuilder<TechCatDbContext>()
-            .UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=TechCatRegistry_Test;Trusted_Connection=True")
-            .Options;
+        var options = new DbContextOptionsBuilder<TechCatDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
         // learn.microsoft.com/ef/core/testing/testing-without-the-database
 
         using var db = new TechCatDbContext(options);
