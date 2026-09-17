@@ -58,6 +58,7 @@ public class CatalogParserTests
         var options = new DbContextOptionsBuilder<TechCatDbContext>()
             .UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=TechCatRegistry_Test;Trusted_Connection=True")
             .Options;
+        // learn.microsoft.com/ef/core/testing/testing-without-the-database
 
         using var db = new TechCatDbContext(options);
         db.Database.EnsureDeleted();
