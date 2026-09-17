@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using DocumentFormat.OpenXml.Vml.Office;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
 using TechCatRegistry.Core;
 
@@ -11,6 +12,7 @@ namespace TechCatRegistry.Data
         public DbSet<DataPoint> DataPoint { get; set; }
         public DbSet<Catalog> Catalog { get; set; }
         public DbSet<Component> Component { get; set; }
+        public DbSet<EstimateType> EstimateType { get; set; }
 
         public TechCatDbContext(DbContextOptions<TechCatDbContext> options) : base(options)
         {
@@ -23,6 +25,14 @@ namespace TechCatRegistry.Data
 
             modelBuilder.Entity<DataPoint>(entity =>
             {
+                entity.HasIndex(d => new { d.ComponentId, d.ParameterId, d.EstimateTypeId, d.Year }).IsUnique();
+
+                entity.HasOne<EstimateType>()
+                    .WithMany()
+                    .HasForeignKey(d => d.EstimateTypeId)
+                    .IsRequired()
+                    .OnDelete(DeleteBehavior.Restrict); // https://learn.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.deletebehavior?view=efcore-10.0
+
                 entity.HasIndex(d => new { d.ComponentId, d.ParameterId, d.EstimateTypeId, d.Year }).IsUnique();
 
                 entity.Property(d => d.EstimateTypeId)

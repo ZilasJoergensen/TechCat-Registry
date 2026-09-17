@@ -11,8 +11,8 @@ namespace TechCatRegistry.Data.Parsing;
 
 public class CatalogParser
 {
-    private const int HeaderRow = 2;
-    private const int FirstDataRow = 3;
+    private const int _headerRow = 2;
+    private const int _firstDataRow = 3;
 
     public List<CatalogRow> ParseFromExcelFilePath(string filepath)
     {
@@ -44,7 +44,7 @@ public class CatalogParser
 
         var rows = new List<CatalogRow>();
 
-        for (int row = FirstDataRow; row <= lastRow; row++)
+        for (int row = _firstDataRow; row <= lastRow; row++)
         {
             if (alldata.Cell(row, tech).IsEmpty())
                 continue;
@@ -83,7 +83,7 @@ public class CatalogParser
 
         for (int col = 1; col <= lastColumn; col++)
         {
-            var name = sheet.Cell(HeaderRow, col).GetString();
+            var name = sheet.Cell(_headerRow, col).GetString();
             if (name.Length > 0)
                 map[name] = col;
         }

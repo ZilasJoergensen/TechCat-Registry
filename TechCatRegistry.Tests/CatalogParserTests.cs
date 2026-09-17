@@ -1,4 +1,7 @@
 ﻿using ClosedXML.Excel;
+using Microsoft.EntityFrameworkCore;
+using TechCatRegistry.Data;
+using TechCatRegistry.Data.Ingest;
 using TechCatRegistry.Data.Parsing;
 
 namespace TechCatRegistry.Tests;
@@ -47,6 +50,29 @@ public class CatalogParserTests
         Assert.Null(first.Unit);
         Assert.Null(first.PriceYear);
         Assert.Equal("A", first.Note);
+    }
+
+    [Fact]
+    public void IngestMakesCorrectAmount()
+    {
+        var options = new DbContextOptionsBuilder<TechCatDbContext>()
+            .UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=TechCatRegistry_Test;Trusted_Connection=True")
+            .Options;
+
+        using var db = new TechCatDbContext(options);
+        db.Database.EnsureDeleted();
+        db.Database.EnsureCreated();
+
+        var path = Path.Combine(AppContext.BaseDirectory, "TestData",
+            "technology_data_for_el_and_dh_updated_alldatalong.xlsx");
+        var rows = new CatalogParser().ParseFromExcelFilePath(path);
+
+        new CatalogIngester(db).Ingest(rows, "0019");
+
+        Assert.Equal(1, db.Catalog.Count());
+        Assert.Equal(6, db.ParameterGroup.Count());
+        Assert.Equal(77, db.Component.Count());
+        Assert.Equal(17508, db.DataPoint.Count());
     }
 
     [Fact]
