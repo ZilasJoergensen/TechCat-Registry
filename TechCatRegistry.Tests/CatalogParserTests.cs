@@ -21,7 +21,7 @@ public class CatalogParserTests
         var version = intro.Cell("D3").GetString();
 
         Assert.Contains("0019", version);
-    }
+    }   
 
     [Fact]
     public void ParserReadsAllRowsCount()
@@ -55,8 +55,7 @@ public class CatalogParserTests
     [Fact]
     public void IngestMakesCorrectAmount()
     {
-        var options = new DbContextOptionsBuilder<TechCatDbContext>()
-            .UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=TechCatRegistry_Test;Trusted_Connection=True").Options;
+        var options = new DbContextOptionsBuilder<TechCatDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
         // learn.microsoft.com/ef/core/testing/testing-without-the-database
 
         using var db = new TechCatDbContext(options);
