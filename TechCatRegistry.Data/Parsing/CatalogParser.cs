@@ -16,7 +16,17 @@ public class CatalogParser
 
     public List<CatalogRow> ParseFromExcelFilePath(string filepath)
     {
-        var workbook = new XLWorkbook(filepath);
+        using var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read);
+        return ParseFromStream(stream).Rows;
+    }
+
+    public ParsedCatalog ParseFromStream(Stream stream)
+    {
+        using var workbook = new XLWorkbook(stream);
+
+        var intro = workbook.Worksheet("Intro");
+        var version = intro.Cell("D3").GetString();
+
         var alldata = workbook.Worksheet("alldata_long");
         int lastRow = alldata.LastRowUsed().RowNumber();
 
@@ -49,6 +59,8 @@ public class CatalogParser
             if (alldata.Cell(row, tech).IsEmpty())
                 continue;
 
+            var valCell = alldata.Cell(row, val);
+
             rows.Add(new CatalogRow
             {
                 Ws = alldata.Cell(row, ws).GetString(),
@@ -61,7 +73,8 @@ public class CatalogParser
                 Est = alldata.Cell(row, est).GetString(),
                 Year = alldata.Cell(row, year).GetValue<int>(),
                 PriceYear = alldata.Cell(row, priceYear).IsEmpty() ? null : alldata.Cell(row, priceYear).GetValue<int>(),
-                Val = alldata.Cell(row, val).GetString(),
+                NumericValue = valCell.DataType == XLDataType.Number ? valCell.GetValue<decimal>() : null,
+                TxtValue = valCell.DataType == XLDataType.Number ? null : valCell.GetString(),
                 CatalogueKey = alldata.Cell(row, catalogueKey).GetString(),
                 TechnologyKey = alldata.Cell(row, technologyKey).GetString(),
                 CatKey = alldata.Cell(row, catKey).GetString(),
@@ -73,7 +86,7 @@ public class CatalogParser
             });
         }
 
-        return rows;
+        return new ParsedCatalog { Version = version, Rows = rows };
     }
 
     private static Dictionary<string, int> ReadHeaders(IXLWorksheet sheet)

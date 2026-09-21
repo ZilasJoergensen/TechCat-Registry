@@ -55,15 +55,15 @@ public class CatalogParserTests
     [Fact]
     public void IngestMakesCorrectAmount()
     {
-        var options = new DbContextOptionsBuilder<TechCatDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
+        var options = new DbContextOptionsBuilder<TechCatDbContext>()
+            .UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=TechCatRegistry_Test;Trusted_Connection=True").Options;
         // learn.microsoft.com/ef/core/testing/testing-without-the-database
 
         using var db = new TechCatDbContext(options);
         db.Database.EnsureDeleted();
         db.Database.EnsureCreated();
 
-        var path = Path.Combine(AppContext.BaseDirectory, "TestData",
-            "technology_data_for_el_and_dh_updated_alldatalong.xlsx");
+        var path = Path.Combine(AppContext.BaseDirectory, "TestData", "technology_data_for_el_and_dh_updated_alldatalong.xlsx");
         var rows = new CatalogParser().ParseFromExcelFilePath(path);
 
         new CatalogIngester(db).Ingest(rows, "0019");

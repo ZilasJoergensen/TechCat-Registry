@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TechCatRegistry.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class IngestFixes : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -20,7 +20,8 @@ namespace TechCatRegistry.Data.Migrations
                     CatalogId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    PublishedOn = table.Column<DateTime>(type: "date", nullable: true)
+                    PublishedOn = table.Column<DateTime>(type: "date", nullable: true),
+                    Version = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -126,7 +127,7 @@ namespace TechCatRegistry.Data.Migrations
                         column: x => x.EstimateTypeId,
                         principalTable: "EstimateType",
                         principalColumn: "EstimateTypeId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_DataPoint_Parameter_ParameterId",
                         column: x => x.ParameterId,
@@ -144,6 +145,12 @@ namespace TechCatRegistry.Data.Migrations
                     { 2, "lower" },
                     { 3, "upper" }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Catalog_Version",
+                table: "Catalog",
+                column: "Version",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Component_CatalogId_SheetCode",

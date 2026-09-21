@@ -16,7 +16,15 @@ public class CatalogIngester
 
     public void Ingest(List<CatalogRow> rows, string version)
     {
-        var catalog = new Catalog { Name = version };
+        if (_db.Catalog.Any(c => c.Version == version))
+            throw new InvalidOperationException($"Version '{version}' already exists somewhere in the db");
+
+        var catalog = new Catalog
+        {
+            Name = "Technology Data for El and DH",
+            Version = version
+        };
+
         _db.Catalog.Add(catalog);
         _db.SaveChanges();
 
@@ -80,13 +88,10 @@ public class CatalogIngester
                 Parameter = parameters[(row.Cat, row.Par)],
                 EstimateTypeId = estimateTypes[row.Est],
                 Year = row.Year,
-                PriceYear = row.PriceYear
+                PriceYear = row.PriceYear,
+                NumericValue = row.NumericValue,
+                TxtValue = row.TxtValue
             };
-
-            if (decimal.TryParse(row.Val, NumberStyles.Any, CultureInfo.InvariantCulture, out var numeric))
-                dataPoint.NumericValue = numeric;
-            else
-                dataPoint.TxtValue = row.Val;
 
             _db.DataPoint.Add(dataPoint);
         }

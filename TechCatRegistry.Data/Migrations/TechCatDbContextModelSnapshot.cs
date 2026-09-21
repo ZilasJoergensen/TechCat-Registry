@@ -38,7 +38,15 @@ namespace TechCatRegistry.Data.Migrations
                     b.Property<DateTime?>("PublishedOn")
                         .HasColumnType("date");
 
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
                     b.HasKey("CatalogId");
+
+                    b.HasIndex("Version")
+                        .IsUnique();
 
                     b.ToTable("Catalog");
                 });
@@ -226,7 +234,7 @@ namespace TechCatRegistry.Data.Migrations
                     b.HasOne("TechCatRegistry.Core.EstimateType", "EstimateType")
                         .WithMany()
                         .HasForeignKey("EstimateTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("TechCatRegistry.Core.Parameter", "Parameter")

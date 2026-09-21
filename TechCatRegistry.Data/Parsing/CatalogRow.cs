@@ -21,7 +21,8 @@ public class CatalogRow
 
     public int? PriceYear { get; set; }
 
-    public string Val { get; set; }
+    public decimal? NumericValue { get; set; }
+    public string? TxtValue { get; set; }
 
     public string CatalogueKey { get; set; }
     public string TechnologyKey { get; set; }

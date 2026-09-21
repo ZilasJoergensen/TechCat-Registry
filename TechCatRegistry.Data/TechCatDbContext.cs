@@ -27,7 +27,7 @@ namespace TechCatRegistry.Data
             {
                 entity.HasIndex(d => new { d.ComponentId, d.ParameterId, d.EstimateTypeId, d.Year }).IsUnique();
 
-                entity.HasOne<EstimateType>()
+                entity.HasOne(d => d.EstimateType)
                     .WithMany()
                     .HasForeignKey(d => d.EstimateTypeId)
                     .IsRequired()
@@ -85,6 +85,12 @@ namespace TechCatRegistry.Data
                     .HasMaxLength(200);
 
                 entity.Property(c => c.PublishedOn).HasColumnType("date");
+
+                entity.Property(c => c.Version)
+                    .IsRequired()
+                    .HasMaxLength(10);
+
+                entity.HasIndex(c => c.Version).IsUnique();
             });
 
             modelBuilder.Entity<ParameterGroup>(entity =>

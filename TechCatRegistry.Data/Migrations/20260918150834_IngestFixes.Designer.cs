@@ -12,8 +12,8 @@ using TechCatRegistry.Data;
 namespace TechCatRegistry.Data.Migrations
 {
     [DbContext(typeof(TechCatDbContext))]
-    [Migration("20260911122515_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260918150834_IngestFixes")]
+    partial class IngestFixes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,7 +41,15 @@ namespace TechCatRegistry.Data.Migrations
                     b.Property<DateTime?>("PublishedOn")
                         .HasColumnType("date");
 
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
                     b.HasKey("CatalogId");
+
+                    b.HasIndex("Version")
+                        .IsUnique();
 
                     b.ToTable("Catalog");
                 });
@@ -229,7 +237,7 @@ namespace TechCatRegistry.Data.Migrations
                     b.HasOne("TechCatRegistry.Core.EstimateType", "EstimateType")
                         .WithMany()
                         .HasForeignKey("EstimateTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("TechCatRegistry.Core.Parameter", "Parameter")
