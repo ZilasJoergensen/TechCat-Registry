@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using TechCatRegistry.Data;
 using TechCatRegistry.Data.Ingest;
 using TechCatRegistry.Data.Parsing;
+using TechCatRegistry.Api.Security;
 
 namespace TechCatRegistry.Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
+[ApiKey]
 public class IngestController : ControllerBase
 {
     private readonly TechCatDbContext _db;
@@ -27,10 +29,31 @@ public class IngestController : ControllerBase
         if (!file.FileName.EndsWith(".xlsx", StringComparison.OrdinalIgnoreCase))
             return BadRequest("Wrong file ending type thing");
 
-        using var stream = file.OpenReadStream();
-        var parsed = new CatalogParser().ParseFromStream(stream);
+        ParsedCatalog parsed;
 
-        new CatalogIngester(_db).Ingest(parsed.Rows, parsed.Version);
+        try
+        {
+            using var stream = file.OpenReadStream();
+            parsed = new CatalogParser().ParseFromStream(stream);
+        }
+        catch (ArgumentException)
+        {
+            return BadRequest("Expected ark missing");
+        }
+        catch (KeyNotFoundException)
+        {
+            return BadRequest("Ark collumns not as expected");
+        }
+
+        try
+        {
+            new CatalogIngester(_db).Ingest(parsed.Rows, parsed.Version);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ex.Message);
+        }
+
 
         return Ok(new { rows = parsed.Rows.Count, version = parsed.Version });
     }
