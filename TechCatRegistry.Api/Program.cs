@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using TechCatRegistry.Data;
@@ -25,6 +26,13 @@ builder.Services.AddOpenApi(options =>
 });
 
 var app = builder.Build();
+
+// AI HJULPET EFTER MÆRKELIG FEJL PÅ SCALAR
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+// AI HJULPET EFTER MÆRKELIG FEJL PÅ SCALAR
 
 var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
