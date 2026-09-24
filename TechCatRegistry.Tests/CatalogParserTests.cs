@@ -70,6 +70,7 @@ public class CatalogParserTests
         Assert.Equal(1, db.Catalog.Count());
         Assert.Equal(6, db.ParameterGroup.Count());
         Assert.Equal(77, db.Component.Count());
+        Assert.Equal(220, db.Parameter.Count());
         Assert.Equal(17508, db.DataPoint.Count());
     }
 
