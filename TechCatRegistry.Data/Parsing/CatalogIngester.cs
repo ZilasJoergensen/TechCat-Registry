@@ -26,7 +26,6 @@ public class CatalogIngester
         };
 
         _db.Catalog.Add(catalog);
-        _db.SaveChanges();
 
         var estimateTypes = new Dictionary<string, int>();
         foreach (var estimateType in _db.Set<EstimateType>())
