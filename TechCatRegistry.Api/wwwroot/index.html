@@ -1,0 +1,300 @@
+
+
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TechCat Registry</title>
+  <style>
+    :root {
+      --ink: #1c2328;
+      --muted: #5f6b73;
+      --line: #d9dfe3;
+      --paper: #ffffff;
+      --wash: #f3f6f8;
+      --petrol: #1f4e5f;
+      --petrol-dark: #163a47;
+      --focus: #2f7fa3;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { margin: 0; background: var(--wash); color: var(--ink); }
+
+    body {
+      font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-variant-numeric: tabular-nums;
+    }
+
+    header {
+      background: var(--petrol);
+      color: #fff;
+      padding: 28px 40px 24px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 40px 60px;
+    }
+
+    /* ---------- Filtre ---------- */
+
+    .filters {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 2fr auto;
+      gap: 16px;
+      align-items: end;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      padding: 20px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .field select,
+    .field input {
+      width: 100%;
+      height: 40px;
+      padding: 0 10px;
+      font: inherit;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+    }
+
+    .field select:focus-visible,
+    .field input:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 1px;
+    }
+
+    button {
+      height: 40px;
+      padding: 0 22px;
+      font: inherit;
+      font-weight: 600;
+      color: #fff;
+      background: var(--petrol);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover { background: var(--petrol-dark); }
+
+    /* ---------- Resultat ---------- */
+
+    .status {
+      margin: 24px 0 10px;
+      font-size: 14px;
+      color: var(--muted);
+      min-height: 1.4em;
+    }
+
+    .table-wrap {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+    }
+
+    th, td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+
+    th {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--muted);
+      background: var(--wash);
+      position: sticky;
+      top: 0;
+    }
+
+    td.num, th.num { text-align: right; }
+
+    td.param { white-space: normal; min-width: 320px; }
+
+    tbody tr:hover td { background: #fafcfd; }
+
+    tbody:empty + tfoot td {
+      color: var(--muted);
+      text-align: center;
+      padding: 40px 14px;
+    }
+
+    @media (max-width: 800px) {
+      header, main { padding-left: 20px; padding-right: 20px; }
+      .filters { grid-template-columns: 1fr 1fr; }
+      .filters .field.wide { grid-column: 1 / -1; }
+      .filters button { grid-column: 1 / -1; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>TechCat Registry</h1>
+    <p>Energistyrelsens teknologikatalog for el og fjernvarme — version 0019</p>
+  </header>
+
+  <main>
+
+    <section class="filters" aria-label="Filtre">
+      <div class="field wide">
+        <label for="component">Komponent</label>
+        <select id="component">
+          <option value="">Alle komponenter</option>
+          <!-- fyldes af loadComponents() -->
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="year">Fremskrivningsår</label>
+        <select id="year">
+          <option value="">Alle år</option>
+          <option value="2015">2015</option>
+          <option value="2020">2020</option>
+          <option value="2030">2030</option>
+          <option value="2040">2040</option>
+          <option value="2050">2050</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="estimate">Estimat</label>
+        <select id="estimate">
+          <option value="">Alle</option>
+          <option value="ctrl">ctrl</option>
+          <option value="lower">lower</option>
+          <option value="upper">upper</option>
+        </select>
+      </div>
+
+      <div class="field wide">
+        <label for="parameter">Parameter indeholder</label>
+        <input id="parameter" type="text" placeholder="fx efficiency eller investment">
+      </div>
+
+      <button id="hent" type="button">Hent</button>
+    </section>
+
+    <p class="status" id="status"></p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="param">Parameter</th>
+            <th>Enhed</th>
+            <th class="num">År</th>
+            <th>Estimat</th>
+            <th class="num">Værdi</th>
+            <th class="num">Prisår</th>
+          </tr>
+        </thead>
+        <tbody id="resultat">
+          <!-- fyldes af loadDataPoints() -->
+        </tbody>
+        <tfoot>
+          <tr><td colspan="6">Vælg filtre og tryk Hent.</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+  </main>
+
+  <script>
+        const VERSION = '0019';
+
+        function cell(text, className) {
+            const tableData = document.createElement('td');
+            tableData.textContent = text;
+            if (className) tableData.className = className;
+            return tableData;
+        }
+
+        async function loadComponents() {
+            const response = await fetch('/Catalogs/' + VERSION + '/components');
+            const components = await response.json();
+
+            const select = document.getElementById('component');
+
+            for (const component of components) {
+                const option = document.createElement('option');
+                option.value = component.sheetCode;
+                option.textContent = component.sheetCode;
+                select.appendChild(option);
+            }
+        }
+
+        async function loadDataPoints() {
+            const sheetCode = document.getElementById('component').value;
+            const year = document.getElementById('year').value;
+            const estimate = document.getElementById('estimate').value;
+            const parameter = document.getElementById('parameter').value;
+
+            const params = new URLSearchParams();
+            if (sheetCode) params.set('sheetCode', sheetCode);
+            if (year) params.set('year', year);
+            if (estimate) params.set('estimate', estimate);
+            if (parameter) params.set('parameter', parameter);
+
+            const response = await fetch('/Catalogs/' + VERSION + '/datapoints?' + params);
+            const dataPoints = await response.json();
+
+            const tbody = document.getElementById('resultat');
+            tbody.innerHTML = '';
+
+            for (const dp of dataPoints) {
+                const row = document.createElement('tr');
+
+                row.appendChild(cell(dp.parameter, 'param'));
+                row.appendChild(cell(dp.unit ?? ''));
+                row.appendChild(cell(dp.year, 'num'));
+                row.appendChild(cell(dp.estimate));
+                row.appendChild(cell(dp.numericValue ?? dp.txtValue, 'num'));
+                row.appendChild(cell(dp.priceYear ?? '', 'num'));
+
+                tbody.appendChild(row);
+            }
+
+            document.getElementById('status').textContent = dataPoints.length + ' rækker';
+        }
+
+        document.getElementById('hent').addEventListener('click', loadDataPoints);
+        loadComponents();
+  </script>
+
+</body>
+</html>
