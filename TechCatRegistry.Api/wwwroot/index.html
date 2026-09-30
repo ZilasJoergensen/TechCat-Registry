@@ -317,8 +317,7 @@
 
         document.getElementById('hent').addEventListener('click', loadDataPoints);
         document.getElementById('parameter').addEventListener('input', loadDataPoints);
-        loadCatalogs();
-        loadComponents();
+        loadCatalogs().then(loadComponents);
   </script>
 
 </body>
