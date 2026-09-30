@@ -240,7 +240,9 @@
   </main>
 
   <script>
-        const VERSION = '0019';
+        function version() {
+            return document.getElementById('catalog').value;
+        }
 
         function cell(text, className) {
             const tableData = document.createElement('td');
@@ -264,10 +266,12 @@
         }
 
         async function loadComponents() {
-            const response = await fetch('/Catalogs/' + VERSION + '/components');
+            const response = await fetch('/Catalogs/' + version() + '/components');
             const components = await response.json();
 
             const select = document.getElementById('component');
+
+            select.innerHTML = '';
 
             for (const component of components) {
                 const option = document.createElement('option');
@@ -289,7 +293,7 @@
             if (estimate) params.set('estimate', estimate);
             if (parameter) params.set('parameter', parameter);
 
-            const response = await fetch('/Catalogs/' + VERSION + '/datapoints?' + params);
+            const response = await fetch('/Catalogs/' + version() + '/datapoints?' + params);
             const dataPoints = await response.json();
 
             const tbody = document.getElementById('resultat');
