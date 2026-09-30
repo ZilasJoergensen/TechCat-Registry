@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using TechCatRegistry.Core;
 using TechCatRegistry.Data;
 
 var builder = WebApplication.CreateBuilder(args);
