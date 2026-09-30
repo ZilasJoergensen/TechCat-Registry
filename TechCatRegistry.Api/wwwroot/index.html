@@ -311,6 +311,7 @@
             document.getElementById('status').textContent = dataPoints.length + ' rækker';
         }
 
+        document.getElementById('hent').addEventListener('click', loadCatalogs);
         document.getElementById('hent').addEventListener('click', loadDataPoints);
         document.getElementById('parameter').addEventListener('input', loadDataPoints);
         loadComponents();
